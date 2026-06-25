@@ -5,8 +5,13 @@ EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
+# Build-time only credential for restoring the GitHub Packages NuGet feed (see nuget.config).
+# Scoped to this stage; `publish` inherits it via `FROM build`, but `final` never declares
+# it, so the token is structurally absent from the runtime image.
+ARG GITHUB_TOKEN
 WORKDIR /src
 
+COPY nuget.config ./
 COPY src/SubscriptionsService.Domain/SubscriptionsService.Domain.csproj src/SubscriptionsService.Domain/
 COPY src/SubscriptionsService.Application/SubscriptionsService.Application.csproj src/SubscriptionsService.Application/
 COPY src/SubscriptionsService.Infrastructure/SubscriptionsService.Infrastructure.csproj src/SubscriptionsService.Infrastructure/

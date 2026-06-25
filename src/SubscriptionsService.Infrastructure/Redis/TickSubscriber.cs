@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using SubscriptionsService.Application.Abstractions;
 using SubscriptionsService.Application.Common;
@@ -13,16 +14,18 @@ namespace SubscriptionsService.Infrastructure.Redis;
 public class TickSubscriber : ITickSubscriber
 {
     private readonly ISubscriber _subscriber;
+    private readonly ILogger<TickSubscriber> _logger;
     private readonly ConcurrentDictionary<string, TopicSubscription> _topics = new();
 
-    public TickSubscriber(IConnectionMultiplexer multiplexer)
+    public TickSubscriber(IConnectionMultiplexer multiplexer, ILogger<TickSubscriber> logger)
     {
         _subscriber = multiplexer.GetSubscriber();
+        _logger = logger;
     }
 
     public async Task SubscribeAsync(string topic, string connectionId, Func<TickMessage, Task> handler, CancellationToken ct)
     {
-        var subscription = _topics.GetOrAdd(topic, t => new TopicSubscription(t));
+        var subscription = _topics.GetOrAdd(topic, t => new TopicSubscription(t, _logger));
         subscription.AddHandler(connectionId, handler);
         await subscription.EnsureSubscribedAsync(_subscriber);
     }
@@ -44,11 +47,16 @@ public class TickSubscriber : ITickSubscriber
     private sealed class TopicSubscription
     {
         private readonly string _topic;
+        private readonly ILogger<TickSubscriber> _logger;
         private readonly ConcurrentDictionary<string, Func<TickMessage, Task>> _handlers = new();
         private readonly SemaphoreSlim _gate = new(1, 1);
         private bool _subscribed;
 
-        public TopicSubscription(string topic) => _topic = topic;
+        public TopicSubscription(string topic, ILogger<TickSubscriber> logger)
+        {
+            _topic = topic;
+            _logger = logger;
+        }
 
         public void AddHandler(string connectionId, Func<TickMessage, Task> handler) =>
             _handlers[connectionId] = handler;
@@ -115,13 +123,15 @@ public class TickSubscriber : ITickSubscriber
             {
                 tick = TickSerializer.Deserialize(value!);
             }
-            catch
+            catch (Exception ex)
             {
-                return; // malformed tick — drop it
+                _logger.LogWarning(ex, "Dropping malformed tick on {Topic}: {Payload}", _topic, value.ToString());
+                return;
             }
 
             if (tick is null)
             {
+                _logger.LogWarning("Dropping unparseable tick on {Topic}: {Payload}", _topic, value.ToString());
                 return;
             }
 

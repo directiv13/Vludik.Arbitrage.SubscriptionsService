@@ -23,9 +23,9 @@ public class SubscriptionRepository : ISubscriptionRepository
             ConnectionId = subscription.ConnectionId,
             Symbol = subscription.Symbol,
             BuyExchange = subscription.BuyExchange.Name,
-            BuyContract = subscription.BuyExchange.ContractType.ToTopicString(),
+            BuyContract = subscription.BuyExchange.ContractType.ToPersistedString(),
             SellExchange = subscription.SellExchange.Name,
-            SellContract = subscription.SellExchange.ContractType.ToTopicString(),
+            SellContract = subscription.SellExchange.ContractType.ToPersistedString(),
             Status = "active",
             CreatedAt = subscription.SubscribedAt,
             ClosedAt = null

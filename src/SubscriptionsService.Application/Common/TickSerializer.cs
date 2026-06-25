@@ -24,8 +24,20 @@ public static class TickSerializer
 
     private sealed class TickDateTimeConverter : JsonConverter<DateTime>
     {
-        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
-            DateTime.ParseExact(reader.GetString()!, DateFormat, CultureInfo.InvariantCulture);
+        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var raw = reader.GetString()!;
+
+            // Market Data publishes ReceivedAt as ISO 8601 with variable-precision fractional
+            // seconds (trailing zeros trimmed), not the documented MM/dd/yyyy HH:mm:ss wire
+            // format. ParseExact("O") rejects the trimmed form, so fall back to a general parse.
+            if (DateTime.TryParseExact(raw, DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var legacy))
+            {
+                return legacy;
+            }
+
+            return DateTime.Parse(raw, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+        }
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options) =>
             writer.WriteStringValue(value.ToString(DateFormat, CultureInfo.InvariantCulture));
