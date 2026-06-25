@@ -1,0 +1,51 @@
+services:
+  redis:
+    image: redis:7
+    container_name: subscriptions-redis
+    # Enable keyspace expiry notifications (the service also sets this at startup).
+    command: ["redis-server", "--notify-keyspace-events", "Ex"]
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: subscriptions-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  postgres:
+    image: postgres:16
+    container_name: subscriptions-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: arbitrage
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - subscriptions-pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: subscriptions-api
+    depends_on:
+      - redis
+      - rabbitmq
+      - postgres
+    ports:
+      - "8080:8080"
+    environment:
+      Redis__ConnectionString: redis:6379
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: guest
+      RabbitMQ__Password: guest
+      ConnectionStrings__SubscriptionsDb: Host=postgres;Database=arbitrage;Username=postgres;Password=postgres
+
+volumes:
+  subscriptions-pgdata:

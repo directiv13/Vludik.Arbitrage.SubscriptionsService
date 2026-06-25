@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SubscriptionsService.Infrastructure\SubscriptionsService.Infrastructure.csproj" />
+    <ProjectReference Include="..\SubscriptionsService.Application\SubscriptionsService.Application.csproj" />
+    <ProjectReference Include="..\SubscriptionsService.Domain\SubscriptionsService.Domain.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
