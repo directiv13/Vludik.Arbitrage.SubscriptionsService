@@ -5,11 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using SubscriptionsService.Application.Abstractions;
-using SubscriptionsService.Domain.Events;
 using SubscriptionsService.Infrastructure.Messaging;
 using SubscriptionsService.Infrastructure.Persistence;
 using SubscriptionsService.Infrastructure.Redis;
 using SubscriptionsService.Infrastructure.Settings;
+using System.Text.Json.Serialization;
+using Vludik.Arbitrage.Events;
 
 namespace SubscriptionsService.Infrastructure;
 
@@ -56,6 +57,12 @@ public static class DependencyInjection
                 {
                     h.Username(rabbitSettings.Username);
                     h.Password(rabbitSettings.Password);
+                });
+
+                cfg.ConfigureJsonSerializerOptions(opts =>
+                {
+                    opts.Converters.Add(new JsonStringEnumConverter());
+                    return opts;
                 });
 
                 ConfigureTopicPublish<SubscriptionCreatedEvent>(cfg, "subscription.created");

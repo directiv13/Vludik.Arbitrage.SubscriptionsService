@@ -1,4 +1,4 @@
-using SubscriptionsService.Domain.Enums;
+using Vludik.Arbitrage.Events.Entities;
 
 namespace SubscriptionsService.Application.Common;
 

@@ -1,6 +1,7 @@
 using SubscriptionsService.Application.Abstractions;
 using SubscriptionsService.Application.Common;
-using SubscriptionsService.Domain.Events;
+using Vludik.Arbitrage.Events;
+using Vludik.Arbitrage.Events.Entities;
 
 namespace SubscriptionsService.Application.UseCases.HandleExpired;
 
@@ -72,8 +73,8 @@ public class HandleExpiredHandler
             id ?? Guid.Empty,
             connectionId,
             subscription.Symbol,
-            new ExchangeRef(subscription.BuyExchange.Name, subscription.BuyExchange.ContractType.ToTopicString()),
-            new ExchangeRef(subscription.SellExchange.Name, subscription.SellExchange.ContractType.ToTopicString()),
+            new ExchangeRef(subscription.BuyExchange.Name, subscription.BuyExchange.ContractType),
+            new ExchangeRef(subscription.SellExchange.Name, subscription.SellExchange.ContractType),
             "expired",
             new DateTimeOffset(closedAt).ToUnixTimeMilliseconds()), ct);
 

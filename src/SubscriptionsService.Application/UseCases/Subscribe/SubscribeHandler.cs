@@ -2,8 +2,9 @@ using SubscriptionsService.Application.Abstractions;
 using SubscriptionsService.Application.Common;
 using SubscriptionsService.Application.UseCases.Unsubscribe;
 using SubscriptionsService.Domain.Entities;
-using SubscriptionsService.Domain.Events;
 using SubscriptionsService.Domain.ValueObjects;
+using Vludik.Arbitrage.Events;
+using Vludik.Arbitrage.Events.Entities;
 
 namespace SubscriptionsService.Application.UseCases.Subscribe;
 
@@ -83,8 +84,8 @@ public class SubscribeHandler
             id,
             connectionId,
             command.Symbol,
-            new ExchangeRef(command.BuyExchange.Name, command.BuyExchange.ContractType.ToTopicString()),
-            new ExchangeRef(command.SellExchange.Name, command.SellExchange.ContractType.ToTopicString()),
+            new ExchangeRef(command.BuyExchange.Name, command.BuyExchange.ContractType),
+            new ExchangeRef(command.SellExchange.Name, command.SellExchange.ContractType),
             new DateTimeOffset(now).ToUnixTimeMilliseconds()), ct);
     }
 
