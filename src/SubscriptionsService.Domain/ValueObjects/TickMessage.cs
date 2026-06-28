@@ -6,5 +6,5 @@ public record TickMessage(
     string ContractType,
     decimal BestBid,
     decimal BestAsk,
-    DateTime ReceivedAt
+    long Timestamp
 );

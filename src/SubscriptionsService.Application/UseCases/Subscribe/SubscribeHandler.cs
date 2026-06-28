@@ -3,6 +3,8 @@ using SubscriptionsService.Application.Common;
 using SubscriptionsService.Application.UseCases.Unsubscribe;
 using SubscriptionsService.Domain.Entities;
 using SubscriptionsService.Domain.ValueObjects;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Vludik.Arbitrage.Events;
 using Vludik.Arbitrage.Events.Entities;
 
@@ -90,5 +92,5 @@ public class SubscribeHandler
     }
 
     private Func<TickMessage, Task> CreateForwarder(string connectionId) =>
-        tick => _connectionManager.SendAsync(connectionId, TickSerializer.Serialize(tick), CancellationToken.None);
+        tick => _connectionManager.SendAsync(connectionId, JsonSerializer.Serialize(tick), CancellationToken.None);
 }

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using SubscriptionsService.Application.Abstractions;
@@ -121,7 +122,7 @@ public class TickSubscriber : ITickSubscriber
             TickMessage? tick;
             try
             {
-                tick = TickSerializer.Deserialize(value!);
+                tick = JsonSerializer.Deserialize<TickMessage>(value!);
             }
             catch (Exception ex)
             {
