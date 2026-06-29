@@ -10,7 +10,7 @@ using SubscriptionsService.Infrastructure.Persistence;
 using SubscriptionsService.Infrastructure.Redis;
 using SubscriptionsService.Infrastructure.Settings;
 using System.Text.Json.Serialization;
-using Vludik.Arbitrage.Events;
+using Vludik.Arbitrage.SubscriptionsService.Shared.Events;
 
 namespace SubscriptionsService.Infrastructure;
 

@@ -3,7 +3,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using SubscriptionsService.Application.Abstractions;
-using SubscriptionsService.Application.Common;
 using SubscriptionsService.Domain.ValueObjects;
 
 namespace SubscriptionsService.Infrastructure.Redis;

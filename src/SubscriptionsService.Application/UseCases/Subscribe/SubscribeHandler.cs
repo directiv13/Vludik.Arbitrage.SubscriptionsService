@@ -4,9 +4,8 @@ using SubscriptionsService.Application.UseCases.Unsubscribe;
 using SubscriptionsService.Domain.Entities;
 using SubscriptionsService.Domain.ValueObjects;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Vludik.Arbitrage.Events;
-using Vludik.Arbitrage.Events.Entities;
+using Vludik.Arbitrage.Shared.Models;
+using Vludik.Arbitrage.SubscriptionsService.Shared.Events;
 
 namespace SubscriptionsService.Application.UseCases.Subscribe;
 
